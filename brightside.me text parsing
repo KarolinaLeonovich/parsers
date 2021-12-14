@@ -1,0 +1,26 @@
+import requests
+from bs4 import BeautifulSoup
+
+
+page = requests.get("https://brightside.me/popular/")
+soup = BeautifulSoup(page.text, "html.parser")
+all_links = soup.find("main", attrs={"class": "_3bJ_y_Iuee_RsbMUNMGYPf"})
+link = all_links.find_all("div")
+for i in link:
+    somestring = str(i)
+    if "href" in somestring and "logo-link" in somestring:
+        l = i.find('a')
+        exact_link = "https://brightside.me/" + str(l.get('href'))
+        print(exact_link)
+        page = requests.get(exact_link)
+        soup = BeautifulSoup(page.text, "html.parser")
+        rekl = soup.find("div", attrs={"data-test-id": "article-content"})
+        news = rekl.find_all("div")
+        text = []
+        for i in news:
+            string = i.get_text()
+            if string and not "©" in str(string) and not "photo credit" in str(string):
+                string = string.replace(u'\xa0', u' ')
+                string = string.replace(u'\n', u'')
+                text.append(string)
+        print(text)
