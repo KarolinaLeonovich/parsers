@@ -1,0 +1,19 @@
+import requests
+from bs4 import BeautifulSoup
+
+links_list = ["https://povar.ru/list/meat",
+              "https://povar.ru/list/fish",
+              "https://povar.ru/list/ptica",
+              "https://povar.ru/list/vegies",
+              "https://povar.ru/list/salad",
+              "https://povar.ru/list/soup",
+              "https://povar.ru/list/vypechka",
+              "https://povar.ru/list/dessert"]
+pages_list = [348, 204, 346, 635, 208, 129, 533, 111]
+for i, p in enumerate(links_list):
+    for q in range(pages_list[i]):
+        link = f'{p}' + "/" + f"{q}"
+        page = requests.get(link)
+        soup = BeautifulSoup(page.text, "html.parser")
+        for link in soup.find_all('a', attrs={"class": "listRecipieTitle"}):
+            print(link.get('href'))
