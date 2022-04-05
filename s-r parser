@@ -1,0 +1,94 @@
+import requests
+from bs4 import BeautifulSoup
+import random
+from time import sleep
+
+headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.75 Safari/537.36",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+        "Accept-Language": "ru,en;q=0.9,pl;q=0.8"
+    }
+# парсим ссылки на года
+# URL = "http://www.secret-r.net/index.php/arkhiv-publikatsij.html"
+# page = requests.get(URL, headers=headers)
+# random_secund = random.randint(4, 8)
+# soup = BeautifulSoup(page.text, "html.parser")
+# rekl = soup.find_all("div", attrs={"class": "subCategory"})
+# for j in range(0, len(rekl)):
+#     links = [a.get('href') for a in rekl[j].find_all('a', href=True)]
+#     for i in links:
+#         print(i)
+#         sleep(random_secund)
+
+#http://www.secret-r.net/index.php/arkhiv-publikatsij/content/6-1998-2006.html
+#парсим ссылки на статьи. Пагинацию сделала руками, проще было так
+# links = [
+# "http://www.secret-r.net/index.php/arkhiv-publikatsij/content/6-1998-2006.html",
+# "http://www.secret-r.net/index.php/arkhiv-publikatsij/content/6-1998-2006.html?start=30",
+# "http://www.secret-r.net/index.php/arkhiv-publikatsij/content/6-1998-2006.html?start=60",
+# "http://www.secret-r.net/arkhiv-publikatsij/content/7-2007.html",
+# "http://www.secret-r.net/arkhiv-publikatsij/content/8-2008.html",
+# "http://www.secret-r.net/index.php/arkhiv-publikatsij/content/8-2008.html?start=30",
+# "http://www.secret-r.net/arkhiv-publikatsij/content/9-2009.html",
+# "http://www.secret-r.net/index.php/arkhiv-publikatsij/content/9-2009.html?start=30",
+# "http://www.secret-r.net/arkhiv-publikatsij/content/10-2010.html",
+# "http://www.secret-r.net/index.php/arkhiv-publikatsij/content/10-2010.html?start=30",
+# "http://www.secret-r.net/arkhiv-publikatsij/content/11-2011.html",
+# "http://www.secret-r.net/index.php/arkhiv-publikatsij/content/11-2011.html?start=30",
+# "http://www.secret-r.net/arkhiv-publikatsij/content/12-2012.html",
+# "http://www.secret-r.net/index.php/arkhiv-publikatsij/content/12-2012.html?start=30",
+# "http://www.secret-r.net/arkhiv-publikatsij/content/13-2013.html",
+# "http://www.secret-r.net/index.php/arkhiv-publikatsij/content/13-2013.html?start=30",
+# "http://www.secret-r.net/arkhiv-publikatsij/content/31-2014.html",
+# "http://www.secret-r.net/index.php/arkhiv-publikatsij/content/31-2014.html?start=30",
+# "http://www.secret-r.net/arkhiv-publikatsij/content/34-2015.html",
+# "http://www.secret-r.net/index.php/arkhiv-publikatsij/content/34-2015.html?start=30",
+# "http://www.secret-r.net/arkhiv-publikatsij/content/36-2016.html",
+# "http://www.secret-r.net/index.php/arkhiv-publikatsij/content/36-2016.html?start=30",
+# "http://www.secret-r.net/arkhiv-publikatsij/content/39-2017.html",
+# "http://www.secret-r.net/index.php/arkhiv-publikatsij/content/39-2017.html?start=30",
+# "http://www.secret-r.net/arkhiv-publikatsij/content/41-2018.html",
+# "http://www.secret-r.net/index.php/arkhiv-publikatsij/content/41-2018.html?start=30",
+# "http://www.secret-r.net/arkhiv-publikatsij/content/43-2019.html",
+# "http://www.secret-r.net/index.php/arkhiv-publikatsij/content/43-2019.html?start=30",
+# "http://www.secret-r.net/arkhiv-publikatsij/content/47-2020.html",
+# "http://www.secret-r.net/index.php/arkhiv-publikatsij/content/47-2020.html?start=30",
+# "http://www.secret-r.net/arkhiv-publikatsij/content/48-2021.html",
+# "http://www.secret-r.net/index.php/arkhiv-publikatsij/content/48-2021.html?start=30",
+# ]
+# file = open("links_on_sr_artcl.txt", "w")
+# for link in links:
+#     page = requests.get(link, headers=headers)
+#     random_secund = random.randint(4, 8)
+#     soup = BeautifulSoup(page.text, "html.parser")
+#     rekl = soup.find_all("h3", attrs={"class": "catItemTitle"})
+#     for j in range(0, len(rekl)):
+#         links = [a.get('href') for a in rekl[j].find_all('a', href=True)]
+#         for i in links:
+#             print("http://www.secret-r.net" + str(i) + "\n")
+#             file.write("http://www.secret-r.net" + str(i) + "\n")
+#             sleep(random_secund)
+
+# а теперь сливаем тексты статей
+
+file = open("links_on_sr_artcl.txt", "r")
+lines = file.readlines()
+for line in lines:
+    URL = line
+    page = requests.get(URL, headers=headers)
+    random_secund = random.randint(4, 8)
+    soup = BeautifulSoup(page.text, "html.parser")
+    rekl = soup.find("div", attrs={"class": "itemFullText"})
+    wrong_part = ""
+    URL_part = URL[59:-5]
+    for i in URL_part:
+            wrong_part+=i
+            if i == "/":
+                break
+    URL_part = URL_part.replace(wrong_part, "")
+    file2 = open(URL_part+".txt", "w")
+    file2.write(rekl.get_text())
+    file2.close()
+    sleep(random_secund)
+file.close()
